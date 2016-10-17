@@ -27,6 +27,7 @@ int realMod( int a, int b ){
 void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w){
 	std::vector< std::vector<pixal *> * > * newaop = new std::vector< std::vector<pixal *> * > (h,NULL);
 	//process blur
+	#pragma omp parallel for
 	for(int i=0;i<h;i++){
 		newaop->at(i)=new std::vector<pixal *>;
 		for(int j=0;j<w;j++){
@@ -42,12 +43,14 @@ void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w){
 		}
 	}
 	//clean up original
-	while(!aop->empty()){
-		while(!aop->back()->empty())
-			delete aop->back()->back(),aop->back()->pop_back();
-		delete aop->back();
-		aop->pop_back();
+	#pragma omp parallel for
+	for(int i=0;i<h;i++){
+		while(!aop->at(i)->empty())
+			delete aop->at(i)->back(),aop->at(i)->pop_back();
+		delete aop->at(i);
 	}
+	while(!aop->empty())
+		aop->pop_back();
 	delete aop;
 	aop=newaop;
 }
@@ -70,16 +73,16 @@ int main(int argv, char ** argc){
 		}
 	}
 	fclose(bitmapfile);
-	
+
 	for(int i=0;i<atoi(argc[2]);i++)
 		blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
-	
-	
+
+
 	FILE * attempttocopy = fopen("attempttocopy.bmp","w");
 	fwrite(infotable,sizeof(unsigned char),54,attempttocopy);
 	unsigned char * img = new unsigned char[3*imageheight*imagewidth];
 	memset(img,255,sizeof(unsigned char)*3*imageheight*imagewidth);
-	
+
 	for(int i=0;i<imageheight;i++){
 		std::vector<pixal *> * magic(bigoldarrayofpixals->at(imageheight-i-1));
 		for(int j=0;j<imagewidth;j++){
