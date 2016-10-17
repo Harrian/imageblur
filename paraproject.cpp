@@ -33,7 +33,7 @@ int main(int argv, char ** argc){
 			unsigned char * readpixal = new unsigned char[3];
 			fread(readpixal,sizeof(unsigned char),3,bitmapfile);
 //			std::cout<<(int)*(readpixal+2)<<" "<<(int)*(readpixal+1)<<" "<<(int)*(readpixal)<<std::endl;
-			bigoldarrayofpixals[i]->push_back(new pixal(*(readpixal+2),*(readpixal+1),*(readpixal)));
+			bigoldarrayofpixals[i]->push_back(new pixal(*(readpixal+2),*(readpixal),*(readpixal+1)));
 			delete readpixal;
 		}
 	}
@@ -46,9 +46,9 @@ int main(int argv, char ** argc){
 		std::vector<pixal *> * magic(bigoldarrayofpixals[imageheight-i-1]);
 		for(int j=0;j<imagewidth;j++){
 //			std::cout<<(i*imagewidth+j)*3<<" ";
-			img[(i*imagewidth+j)*3]=magic->at(j)->getGreen();
-//			img[(i*imagewidth+j)*3+1]=magic->at(j)->getBlue();
-//			img[(i*imagewidth+j)*3+2]=magic->at(j)->getRed();
+			img[(i*imagewidth+j)*3]=magic->at(j)->getBlue();
+			// img[(i*imagewidth+j)*3+1]=magic->at(j)->getGreen();
+			// img[(i*imagewidth+j)*3+2]=magic->at(j)->getRed();
 		}
 //		std::cout<<std::endl;
 	}
