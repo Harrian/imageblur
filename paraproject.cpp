@@ -20,25 +20,36 @@ pixal::pixal(unsigned char a, unsigned char b, unsigned char c){
 	blue=b;
 	green=c;
 }
+int realMod( int a, int b ){
+	int r=a%b;
+	return r<0?r+b:r;
+}
 void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w){
 	std::vector< std::vector<pixal *> * > * newaop = new std::vector< std::vector<pixal *> * > (h,NULL);
-	for(int i=1;i<h-1;i++){
-		for(int j=1;j<w-1;j++){
+	//process blur
+	for(int i=0;i<h;i++){
+		newaop->at(i)=new std::vector<pixal *>;
+		for(int j=0;j<w;j++){
 				unsigned int sumOfReds=0;
 				unsigned int sumOfBlues=0;
 				unsigned int sumOfGreens=0;
 				for(int k=-1;k<2;k++)
 					for(int l=-1;l<2;l++)
-						sumOfReds+=aop->at(h-i-1+k)->at(j+l)->getRed(),
-						sumOfGreens+=aop->at(h-i-1+k)->at(j+l)->getGreen(),
-						sumOfBlues+=aop->at(h-i-1+k)->at(j+l)->getBlue();
-
-//			std::cout<<(i*imagewidth+j)*3<<" ";
-//			img[(i*w+j)*3]=magic->at(j)->getBlue();
-//			img[(i*w+j)*3+1]=magic->at(j)->getGreen();
-//      img[(i*w+j)*3+2]=magic->at(j)->getRed();
+						sumOfReds+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getRed(),
+						sumOfGreens+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getGreen(),
+						sumOfBlues+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getBlue();
+				newaop->at(i)->push_back(new pixal((unsigned char)(sumOfReds/9),(unsigned char)(sumOfBlues/9),(unsigned char)(sumOfGreens/9)));
 		}
 	}
+	//clean up original
+	while(!aop->empty()){
+		while(!aop->back()->empty())
+			delete aop->back()->back(),aop->back()->pop_back();
+		delete aop->back();
+		aop->pop_back();
+	}
+	delete aop;
+	aop=newaop;
 }
 int main(int argv, char ** argc){
 	//read image
@@ -59,23 +70,29 @@ int main(int argv, char ** argc){
 		}
 	}
 	fclose(bitmapfile);
+	
+	for(int i=0;i<20;i++)
+		blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
+	
+	
 	FILE * attempttocopy = fopen("attempttocopy.bmp","w");
 	fwrite(infotable,sizeof(unsigned char),54,attempttocopy);
 	unsigned char * img = new unsigned char[3*imageheight*imagewidth];
 	memset(img,255,sizeof(unsigned char)*3*imageheight*imagewidth);
+	
 	for(int i=0;i<imageheight;i++){
 		std::vector<pixal *> * magic(bigoldarrayofpixals->at(imageheight-i-1));
 		for(int j=0;j<imagewidth;j++){
 //			std::cout<<(i*imagewidth+j)*3<<" ";
-//			img[(i*imagewidth+j)*3]=magic->at(j)->getBlue();
-			 img[(i*imagewidth+j)*3+1]=magic->at(j)->getGreen();
-			// img[(i*imagewidth+j)*3+2]=magic->at(j)->getRed();
+			img[(i*imagewidth+j)*3]=magic->at(j)->getBlue();
+			img[(i*imagewidth+j)*3+1]=magic->at(j)->getGreen();
+			img[(i*imagewidth+j)*3+2]=magic->at(j)->getRed();
 		}
 //		std::cout<<std::endl;
 	}
 	fwrite(img,sizeof(unsigned char),3*imageheight*imagewidth,attempttocopy);
 	fclose(attempttocopy);
-	blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
+	//blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
 	//std::cout<<bigoldarrayofpixals[0][0]->getRed()<<" "<<bigoldarrayofpixals[0][0]->getBlue()<<" "<<bigoldarrayofpixals[0][0]->getGreen()<<std::endl;
 	return 0;
 }
