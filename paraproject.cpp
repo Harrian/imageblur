@@ -71,7 +71,7 @@ int main(int argv, char ** argc){
 	}
 	fclose(bitmapfile);
 	
-	for(int i=0;i<20;i++)
+	for(int i=0;i<atoi(argc[2]);i++)
 		blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
 	
 	
