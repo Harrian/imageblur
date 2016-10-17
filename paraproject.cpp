@@ -20,7 +20,26 @@ pixal::pixal(unsigned char a, unsigned char b, unsigned char c){
 	blue=b;
 	green=c;
 }
+void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w){
+	std::vector< std::vector<pixal *> * > * newaop = new std::vector< std::vector<pixal *> * > (h,NULL);
+	for(int i=1;i<h-1;i++){
+		for(int j=1;j<w-1;j++){
+				unsigned int sumOfReds=0;
+				unsigned int sumOfBlues=0;
+				unsigned int sumOfGreens=0;
+				for(int k=-1;k<2;k++)
+					for(int l=-1;l<2;l++)
+						sumOfReds+=aop->at(h-i-1+k)->at(j+l)->getRed(),
+						sumOfGreens+=aop->at(h-i-1+k)->at(j+l)->getGreen(),
+						sumOfBlues+=aop->at(h-i-1+k)->at(j+l)->getBlue();
 
+//			std::cout<<(i*imagewidth+j)*3<<" ";
+//			img[(i*w+j)*3]=magic->at(j)->getBlue();
+//			img[(i*w+j)*3+1]=magic->at(j)->getGreen();
+//      img[(i*w+j)*3+2]=magic->at(j)->getRed();
+		}
+	}
+}
 int main(int argv, char ** argc){
 	//read image
 	FILE * bitmapfile = fopen(argc[1],"r");
@@ -43,7 +62,7 @@ int main(int argv, char ** argc){
 	FILE * attempttocopy = fopen("attempttocopy.bmp","w");
 	fwrite(infotable,sizeof(unsigned char),54,attempttocopy);
 	unsigned char * img = new unsigned char[3*imageheight*imagewidth];
-	memset(img,0,sizeof(unsigned char)*3*imageheight*imagewidth);
+	memset(img,255,sizeof(unsigned char)*3*imageheight*imagewidth);
 	for(int i=0;i<imageheight;i++){
 		std::vector<pixal *> * magic(bigoldarrayofpixals->at(imageheight-i-1));
 		for(int j=0;j<imagewidth;j++){
@@ -56,7 +75,7 @@ int main(int argv, char ** argc){
 	}
 	fwrite(img,sizeof(unsigned char),3*imageheight*imagewidth,attempttocopy);
 	fclose(attempttocopy);
-
+	blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
 	//std::cout<<bigoldarrayofpixals[0][0]->getRed()<<" "<<bigoldarrayofpixals[0][0]->getBlue()<<" "<<bigoldarrayofpixals[0][0]->getGreen()<<std::endl;
 	return 0;
 }
