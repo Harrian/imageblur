@@ -45,12 +45,12 @@ int main(int argv, char ** argc){
 	for(int i=0;i<imageheight;i++){
 		std::vector<pixal *> * magic(bigoldarrayofpixals[imageheight-i-1]);
 		for(int j=0;j<imagewidth;j++){
-			std::cout<<(i*imagewidth+j)*3<<" ";
+//			std::cout<<(i*imagewidth+j)*3<<" ";
 			img[(i*imagewidth+j)*3]=magic->at(j)->getGreen();
 //			img[(i*imagewidth+j)*3+1]=magic->at(j)->getBlue();
 //			img[(i*imagewidth+j)*3+2]=magic->at(j)->getRed();
 		}
-		std::cout<<std::endl;
+//		std::cout<<std::endl;
 	}
 	fwrite(img,sizeof(unsigned char),3*imageheight*imagewidth,attempttocopy);
 	fclose(attempttocopy);
