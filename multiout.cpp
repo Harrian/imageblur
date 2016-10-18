@@ -26,15 +26,47 @@ int realMod( int a, int b ){
 	int r=a%b;
 	return r<0?r+b:r;
 }
-void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w,unsigned char * &header,std::string outputFile){
+
+
+void blurPixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w){
 	std::vector< std::vector<pixal *> * > * newaop = new std::vector< std::vector<pixal *> * > (h,NULL);
+	//process blur
+	#pragma omp parallel for
+	for(int i=0;i<h;i++){
+		newaop->at(i)=new std::vector<pixal *>;
+		for(int j=0;j<w;j++){
+				unsigned int sumOfReds=0;
+				unsigned int sumOfBlues=0;
+				unsigned int sumOfGreens=0;
+				for(int k=-1;k<2;k++)
+					for(int l=-1;l<2;l++)
+						sumOfReds+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getRed(),
+						sumOfGreens+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getGreen(),
+						sumOfBlues+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getBlue();
+				newaop->at(i)->push_back(new pixal((unsigned char)(sumOfReds/9),(unsigned char)(sumOfBlues/9),(unsigned char)(sumOfGreens/9)));
+		}
+	}
+	//clean up original
+	#pragma omp parallel for
+	for(int i=0;i<h;i++){
+		while(!aop->at(i)->empty())
+			delete aop->at(i)->back(),aop->at(i)->pop_back();
+		delete aop->at(i);
+	}
+	while(!aop->empty())
+		aop->pop_back();
+	delete aop;
+	aop=newaop;
+}
 
+
+
+void blurPixalsAndWrite(std::vector< std::vector<pixal *> * > * &aop,int h,int w,unsigned char * &header,std::string outputFile){
+	std::vector< std::vector<pixal *> * > * newaop = new std::vector< std::vector<pixal *> * > (h,NULL);
+	//prepare file
 	FILE * attempttocopy = fopen(outputFile.c_str(),"w");
-
 	fwrite(header,sizeof(unsigned char),54,attempttocopy);
-
 	unsigned char * img = new unsigned char[3*h*w];
-
 
 	//process blur
 	#pragma omp parallel for
@@ -50,6 +82,7 @@ void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w,unsigne
 						sumOfGreens+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getGreen(),
 						sumOfBlues+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getBlue();
 				newaop->at(i)->push_back(new pixal((unsigned char)(sumOfReds/9),(unsigned char)(sumOfBlues/9),(unsigned char)(sumOfGreens/9)));
+				//store in image
 				img[((h-i-1)*w+j)*3]=newaop->at(i)->at(j)->getBlue();
 				img[((h-i-1)*w+j)*3+1]=newaop->at(i)->at(j)->getGreen();
 				img[((h-i-1)*w+j)*3+2]=newaop->at(i)->at(j)->getRed();
@@ -62,7 +95,7 @@ void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w,unsigne
 			delete aop->at(i)->back(),aop->at(i)->pop_back();
 		delete aop->at(i);
 	}
-
+	//write out image
 	fwrite(img,sizeof(unsigned char),3*h*w,attempttocopy);
 	fclose(attempttocopy);
 	delete[] img;
@@ -71,6 +104,7 @@ void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w,unsigne
 	delete aop;
 	aop=newaop;
 }
+
 int main(int argv, char ** argc){
 	//read image
 	FILE * bitmapfile = fopen(argc[1],"r");
@@ -93,7 +127,7 @@ int main(int argv, char ** argc){
 	std::string duplicate(argc[1]);
 	std::string name(duplicate.substr(0,duplicate.find(".")));
 	for(int i=0;i<atoi(argc[2]);i++)
-		blurpixals(bigoldarrayofpixals,imageheight,imagewidth,infotable,name+std::to_string(i)+".bmp");
+		(i+1)%atoi(argc[3])?blurPixals(bigoldarrayofpixals,imageheight,imagewidth):blurPixalsAndWrite(bigoldarrayofpixals,imageheight,imagewidth,infotable,name+std::to_string(i)+".bmp");
 
 	//blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
 	//std::cout<<bigoldarrayofpixals[0][0]->getRed()<<" "<<bigoldarrayofpixals[0][0]->getBlue()<<" "<<bigoldarrayofpixals[0][0]->getGreen()<<std::endl;
