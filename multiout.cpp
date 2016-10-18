@@ -32,7 +32,7 @@ void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w,unsigne
 
 	fwrite(header,sizeof(unsigned char),54,attempttocopy);
 
-	unsigned char * img = new unsigned char[3*imageheight*imagewidth];
+	unsigned char * img = new unsigned char[3*h*w];
 
 
 	//process blur
@@ -49,9 +49,9 @@ void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w,unsigne
 						sumOfGreens+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getGreen(),
 						sumOfBlues+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getBlue();
 				newaop->at(i)->push_back(new pixal((unsigned char)(sumOfReds/9),(unsigned char)(sumOfBlues/9),(unsigned char)(sumOfGreens/9)));
-				img[(i*w+j)*3]=newop->at(h-i-1)->at(j)->getBlue();
-				img[(i*w+j)*3+1]=newop->at(h-i-1)->at(j)->getGreen();
-				img[(i*w+j)*3+2]=newop->at(h-i-1)->at(j)->getRed();
+				img[(i*w+j)*3]=newaop->at(h-i-1)->at(j)->getBlue();
+				img[(i*w+j)*3+1]=newaop->at(h-i-1)->at(j)->getGreen();
+				img[(i*w+j)*3+2]=newaop->at(h-i-1)->at(j)->getRed();
 		}
 	}
 	//clean up original
