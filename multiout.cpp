@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <cstdlib>
 
 class pixal{
 	private:
@@ -49,9 +50,9 @@ void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w,unsigne
 						sumOfGreens+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getGreen(),
 						sumOfBlues+=aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getBlue();
 				newaop->at(i)->push_back(new pixal((unsigned char)(sumOfReds/9),(unsigned char)(sumOfBlues/9),(unsigned char)(sumOfGreens/9)));
-				img[(i*w+j)*3]=newaop->at(h-i-1)->at(j)->getBlue();
-				img[(i*w+j)*3+1]=newaop->at(h-i-1)->at(j)->getGreen();
-				img[(i*w+j)*3+2]=newaop->at(h-i-1)->at(j)->getRed();
+				img[((h-i-1)*w+j)*3]=newaop->at(i)->at(j)->getBlue();
+				img[((h-i-1)*w+j)*3+1]=newaop->at(i)->at(j)->getGreen();
+				img[((h-i-1)*w+j)*3+2]=newaop->at(i)->at(j)->getRed();
 		}
 	}
 	//clean up original
@@ -62,9 +63,9 @@ void blurpixals(std::vector< std::vector<pixal *> * > * &aop,int h,int w,unsigne
 		delete aop->at(i);
 	}
 
-	fwrite(img,sizeof(unsigned char),3*imageheight*imagewidth,attempttocopy);
+	fwrite(img,sizeof(unsigned char),3*h*w,attempttocopy);
 	fclose(attempttocopy);
-
+	delete[] img;
 	while(!aop->empty())
 		aop->pop_back();
 	delete aop;
@@ -89,9 +90,10 @@ int main(int argv, char ** argc){
 		}
 	}
 	fclose(bitmapfile);
-
+	std::string duplicate(argc[1]);
+	std::string name(duplicate.substr(0,duplicate.find(".")));
 	for(int i=0;i<atoi(argc[2]);i++)
-		blurpixals(bigoldarrayofpixals,imageheight,imagewidth,infotable,argc[1]+itoa(i)+".bmp");
+		blurpixals(bigoldarrayofpixals,imageheight,imagewidth,infotable,name+std::to_string(i)+".bmp");
 
 	//blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
 	//std::cout<<bigoldarrayofpixals[0][0]->getRed()<<" "<<bigoldarrayofpixals[0][0]->getBlue()<<" "<<bigoldarrayofpixals[0][0]->getGreen()<<std::endl;
