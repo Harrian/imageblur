@@ -127,7 +127,7 @@ int main(int argv, char ** argc){
 	std::string duplicate(argc[1]);
 	std::string name(duplicate.substr(0,duplicate.find(".")));
 	for(int i=0;i<atoi(argc[2]);i++)
-		(i+1)%atoi(argc[3])?blurPixals(bigoldarrayofpixals,imageheight,imagewidth):blurPixalsAndWrite(bigoldarrayofpixals,imageheight,imagewidth,infotable,name+std::to_string(i)+".bmp");
+		(i+1)%atoi(argc[3])?blurPixals(bigoldarrayofpixals,imageheight,imagewidth):blurPixalsAndWrite(bigoldarrayofpixals,imageheight,imagewidth,infotable,name+std::to_string(i+1)+".bmp");
 
 	//blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
 	//std::cout<<bigoldarrayofpixals[0][0]->getRed()<<" "<<bigoldarrayofpixals[0][0]->getBlue()<<" "<<bigoldarrayofpixals[0][0]->getGreen()<<std::endl;
