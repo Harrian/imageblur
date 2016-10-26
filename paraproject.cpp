@@ -74,8 +74,9 @@ int main(int argv, char ** argc){
 	for(int i=0;i<atoi(argc[2]);i++)
 		blurpixals(bigoldarrayofpixals,imageheight,imagewidth);
 	
-	
-	FILE * attempttocopy = fopen("attempttocopy.bmp","w");
+	std::string duplicate(argc[1]);
+	std::string name(duplicate.substr(0,duplicate.find("."))+argc[2]+".bmp");
+	FILE * attempttocopy = fopen(name.c_str(),"w");
 	fwrite(infotable,sizeof(unsigned char),54,attempttocopy);
 	unsigned char * img = new unsigned char[3*imageheight*imagewidth];
 	memset(img,255,sizeof(unsigned char)*3*imageheight*imagewidth);
