@@ -5,18 +5,26 @@ Brief Summary:
 	Image Blur
 
 Names of files:
+
 	sequential:	/home/f16/p615/imageblur/paraproject.cpp
+
 	parallel:	/home/f16/p615/imageblur/multiout.cpp
 
 Build:
+
 	sequential: 	g++ filename
+
 	parallel:	g++ filename -std=c++11 -fopenmp
 	(It was really painful to avoid c++17 and c++14 for this :P)
 
 Run:
+
 	sequential:
+
 		% ./a.out INPUT.bmp NUMOFBLURS
+
 	parallel:
+
 		% ./a.out INPUT.bmp NUMOFBLURS OUTPUTEVERYX
 
 Notes:
