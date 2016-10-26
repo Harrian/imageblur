@@ -32,9 +32,10 @@ Notes:
 You will notice a minor slow down on small images with low number
 blurs when using parallel
 
-HOWEVER YOU'LL GET THAT SWEET MEGA SPEED UP WITH LARGE IMAGE
+HOWEVER YOU'LL GET THAT SWEET MEGA SPEED UP WITH LARGE IMAGES
 
 sequential only outputs one file at the end of all blurs
+
 Example:
 
 	% ./a.out dock.bmp 40
@@ -42,6 +43,7 @@ Example:
 
 parallel will only print the last blur if NUMBEROFBLURS is
 a multiple of OUTPUTEVERYX
+
 Example:
 	
 	% ./a.out dock.bmp 40 10
