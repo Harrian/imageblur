@@ -140,6 +140,11 @@ int main(int argv, char ** argc){
 		}
 	}
 	fclose(bitmapfile);
+	mongocxx::uri uri("mongodb://localhost:3001");
+    mongocxx::client conn(uri);
+    bsoncxx::builder::stream::document document{};
+    auto collection = conn["meteor"]["rightImages"];
+	collection.drop();
 	std::string duplicate(argc[1]);
 	std::string name(duplicate.substr(0,duplicate.find(".")));
 	for(int i=0;i<atoi(argc[2]);i++)
