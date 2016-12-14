@@ -68,7 +68,7 @@ void blurPixalsAndWrite(std::vector< std::vector<pixal *> * > * &aop,int h,int w
 		for(int j=0;j<w;j++){
 				int sumOfReds=9*aop->at(i)->at(j)->getRed();
 				int sumOfBlues=9*aop->at(i)->at(j)->getBlue();
-				int sumOfGreens=9*aop->at(i)->at(j)->getBlue();
+				int sumOfGreens=9*aop->at(i)->at(j)->getGreen();
 				for(int k=-1;k<2;k++)
 					for(int l=-1;l<2;l++)
 						if(k==0&&l==0)
