@@ -88,7 +88,7 @@ void blurPixalsAndWrite(std::vector< std::vector<pixal *> * > * &aop,int h,int w
 							sumOfReds-=(int)aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getRed(),
 							sumOfGreens-=(int)aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getGreen(),
 							sumOfBlues-=(int)aop->at(realMod(i+k,h))->at(realMod(j+l,w))->getBlue();
-				newaop->at(i)->push_back(new pixal((unsigned char)(sumOfReds/9),(unsigned char)(sumOfBlues/9),(unsigned char)(sumOfGreens/9)));
+				newaop->at(i)->push_back(new pixal((unsigned char)sumOfReds,(unsigned char)sumOfBlues,(unsigned char)sumOfGreens));
 				//store in image
 				img[((h-i-1)*w+j)*3]=newaop->at(i)->at(j)->getBlue();
 				img[((h-i-1)*w+j)*3+1]=newaop->at(i)->at(j)->getGreen();
